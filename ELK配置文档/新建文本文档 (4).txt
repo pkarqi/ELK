@@ -1,0 +1,35 @@
+关于ELK搭建的问题，或许你还有些模糊，其实你把我视频里讲的知识点串起来就明白了。
+
+搭建ELK环境，看下面我说的：
+1. 首先，先把ES集群搭建起来，建议用CentOS6.5 64位的linux系统，把防火墙和SELinux都关闭，互ping各节点是否网络畅通，注意es新版本2.1.1以上的不会自动发现节点了，得自己设置. 
+
+2. 其次，搭建Logstash，用一个节点即可，当然你也可以放在es集群里的任意一个节点上，Logstash是过滤数据用的，所以你得想方法把你要分析的日志传到logstash节点里，让其过滤（也就是logstash input的内容，读取本地file? 还是tcp udp把日志传来？看你自己），传过来的日志就要过滤（就是filter的内容了，一般用grok就OK），输入过滤做完了就写输出，一般都是输出到es里（看logstash output那内容就有说如何输出到es）；另外，一些用的比较普遍的开源软件，网上肯定能找到相应的logstash conf文件的，就没必要自己去写过滤了，拿来参考下... 比如tomcat、Nginx、Mysql等等，最好去github里搜，比如关键词 "logstash tomcat" 。
+
+3. 最后，弄一节点搭建kibana，kibana就是展现es里面的数据，它不存数据！它也就是映射es里的数据，所以你的配置好映射关系。很多人看不懂kibana开始那配置界面，我视频里有讲得很清楚 （注意用kibana看es里的数据，首先先确认你es里面有没有数据，用head插件可以查看）
+
+4. 等你搭建好了ELK系统，也就是说，kibana里能看到你es集群的日志了，那么接下来你就应该考虑如何优化你的ELK环境了；刚开始你要想的是如何更方便的采集你的日志，然后再考虑如何更快的采集大量的日志（用redis or kafka)，最后是再考虑让你的ELK集群在大数据量下长期稳定！
+
+5. 优化是后面的事情了，一般是数据量很大的情况下，才涉及到优化。关于优化，考验的是一个人的综合运维水平。了解ELK架构和原理是第一步，其次也需要有足够的linux系统维护知识、网络维护知识以及服务器硬件知识。
+
+
+一步步来，我知道很多不懂运维的开发也在学这玩意... 对于没运维经验的开发，不要一来就去windows搭建es集群，那不是主流！最好学习下linux的知识，这里有视频，地址是：链接:链接:http://pan.baidu.com/s/1qYrgyPe 密码:s9sr
+
+未来的开源平台肯定是既要运维的知识也要开发的知识，不然有些东西你搞不定，大家做好心理准备。
+
+
+6、学习网站
+    官方网站 https://www.elastic.co/guide/en/elasticsearch/guide/current/running-elasticsearch.html
+             https://www.elastic.co/guide/en/logstash/2.3/plugins-inputs-redis.html
+             https://www.elastic.co/guide/en/kibana/4.3/discover.html#sorting
+    其他网站 http://www.cnblogs.com/zhang-shijie/p/5384624.html
+    多服务器 http://www.jianshu.com/p/0a6a6b583fbb
+7、数据精确搜索：
+   status 200--------------------------搜索状态是200
+   status 200 OR status 304------------搜索状态是200或者304之一的
+   status 200 AND status 304-----------搜索状态是200和304同时匹配的
+   status [200 TO 304]-----------------搜索指定范围
+ 8、检测配置是否正确
+    [elk@mysql bin]$./logstash -t ../log_agent_nginx_access.conf{/usr/local/logstash/bin/}
+	                 !!! Please upgrade your java version, the current version '1.7.0_45-b18' may cause problems. We recommend a minimum version of 1.7.0_51
+                     Configuration OK
+    启动配置文件
