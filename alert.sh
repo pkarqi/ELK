@@ -1,5 +1,5 @@
 #!/bin/bash
-
+＃ by zhixinping
 TIME=`date +'%Y-%m-%d'`
 Logpath=/usr/local/moniter
 EMAILS=(zhixinping@zhongchebaolian.com,pkarqi@163.com,niexianyu@zhongchebaolian.com)
